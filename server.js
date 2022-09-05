@@ -26,7 +26,7 @@ require('dotenv').config();
         await page.click("#id_terms_accepted");
         await page.click("#content > div > div:nth-child(1) > form > table > tbody > tr:nth-child(7) > td:nth-child(2) > input");
         await page.waitForNavigation();
-        console.log("Registrou...");
+        console.log("Cadastrou...");
         
         // Select world
         await page.goto('https://moonid.net/games/knightfight/');
@@ -51,9 +51,16 @@ require('dotenv').config();
         console.log("Atacou...");
 
         // Logout
+        await page.waitForSelector("#moonid-toolbar-account > a");
+        await page.click("#moonid-toolbar-account > a");
         await page.waitForSelector("a.more:nth-child(13)");
         await page.click("a.more:nth-child(13)");
-        console.log("Deslogou...");
+        console.log("Deslogou...", new Date().toString());
+
+        // Clear cache
+        const client = await page.target().createCDPSession();
+        await client.send('Network.clearBrowserCookies');
+        await client.send('Network.clearBrowserCache');
 
         await page.waitForTimeout(1000 * 60 * 60);
     }
