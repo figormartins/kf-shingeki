@@ -3,11 +3,14 @@ const emailService = require('email-generator');
 require('dotenv').config();
 
 (async () => {
-    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'], });
+    const browser = await puppeteer.launch({
+        args:['--start-maximized' ],
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
     await page.setViewport({
         width: 1800,
-        height: 3500,
+        height: 7500,
         deviceScaleFactor: 1,
     });
     console.log("Iniciando...");
@@ -49,6 +52,14 @@ require('dotenv').config();
         // Attack user
         await page.click("#page > form > div > table:nth-child(6) > tbody > tr:nth-child(8) > td > input[type=image]");
         console.log("Atacou...");
+
+        // Remove account
+        page.goto("https://int4.knightfight.moonid.net/profil/");
+        await page.waitForSelector("#page > form > div > table > tbody > tr:nth-child(47) > td > label > div");
+        await page.waitForSelector("#page > form > div > table > tbody > tr:nth-child(48) > td > input[type=image]");
+        await page.click("#page > form > div > table > tbody > tr:nth-child(47) > td > label > div");
+        await page.click("#page > form > div > table > tbody > tr:nth-child(48) > td > input[type=image]");
+        console.log("Account removed from server");
 
         // Logout
         await page.waitForSelector("#moonid-toolbar-account > a");
