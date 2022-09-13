@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const emailService = require('email-generator');
 require('dotenv').config();
+const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers/date');
 
 (async () => {
     const browser = await puppeteer.launch({
@@ -13,6 +14,7 @@ require('dotenv').config();
         height: 7500,
         deviceScaleFactor: 1,
     });
+    let timeToAttack;
     console.log("Iniciando...");
     
     while(true) {
@@ -43,6 +45,27 @@ require('dotenv').config();
         await page.click("#page > div:nth-child(2) > form > div > table > tbody > tr:nth-child(4) > td > input[type=image]");
         await page.waitForSelector("#page > div.box-charimage > img.charimage");
         console.log("Registrou...");
+
+        // Wait to search
+        if (timeToAttack) {
+            await page.waitForSelector("#kftime-header");
+            const valueTimeNow = await page.$eval("#kftime-header", el => el.textContent);
+            const [hours, minutes, seconds] = valueTimeNow.split(":");
+            const timeNow = new Date(timeToAttack.valueOf());
+
+            if (hours < timeNow.getHours()) {
+                timeNow.setDate(timeNow.getDate() + 1);
+            }
+            
+            timeNow.setHours(hours);
+            timeNow.setMinutes(minutes);
+            timeNow.setSeconds(seconds);
+            timeToAttack.setHours(timeToAttack.getHours() + 1);
+
+            const timeout = Math.abs(timeNow - timeToAttack);
+            console.log("Waiting for:", millisToMinutesAndSeconds(timeout));
+            await new Promise(r => setTimeout(r, timeout));;
+        }
         
         // Search for user
         await page.goto('https://int4.knightfight.moonid.net/raubzug/gegner/?searchuserid=517000943');
@@ -53,13 +76,22 @@ require('dotenv').config();
         await page.click("#page > form > div > table:nth-child(6) > tbody > tr:nth-child(8) > td > input[type=image]");
         console.log("Atacou...");
 
+        // Skip button
+        await page.waitForSelector("#button-skip-prem");
+        await page.click("#button-skip-prem");
+        
+        // Get attack time
+        await page.waitForSelector("#page > div > div:nth-child(4) > div > div > div.kf-bi-thin.padding-md.margin-top-lg.cc.f-os > span > b");
+        const valueTime = await page.$eval("#page > div > div:nth-child(4) > div > div > div.kf-bi-thin.padding-md.margin-top-lg.cc.f-os > span > b", el => el.innerHTML);
+        timeToAttack = kfAttackTimeToFullDate(valueTime);
+
         // Remove account
-        page.goto("https://int4.knightfight.moonid.net/profil/");
+        await page.goto("https://int4.knightfight.moonid.net/profil/");
         await page.waitForSelector("#page > form > div > table > tbody > tr:nth-child(47) > td > label > div");
         await page.waitForSelector("#page > form > div > table > tbody > tr:nth-child(48) > td > input[type=image]");
         await page.click("#page > form > div > table > tbody > tr:nth-child(47) > td > label > div");
         await page.click("#page > form > div > table > tbody > tr:nth-child(48) > td > input[type=image]");
-        console.log("Account removed from server");
+        console.log("Account removed from server...");
 
         // Logout
         await page.waitForSelector("#moonid-toolbar-account > a");
@@ -72,7 +104,5 @@ require('dotenv').config();
         const client = await page.target().createCDPSession();
         await client.send('Network.clearBrowserCookies');
         await client.send('Network.clearBrowserCache');
-
-        await page.waitForTimeout(1000 * 60 * 60);
     }
 })();
