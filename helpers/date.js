@@ -1,7 +1,11 @@
-//12.09.2022 23:10:08
+//on 2022-09-12 at 23:10:08
+
 const kfAttackTimeToFullDate = (dateTimeAttack) => {
+    dateTimeAttack = dateTimeAttack.replace(new RegExp('on ', 'g'), "");
+    dateTimeAttack = dateTimeAttack.replace(new RegExp('at ', 'g'), "");
+    console.log(dateTimeAttack);
     const [date, time] = dateTimeAttack.split(" ");
-    const [day, month, year] = date.split(".");
+    const [year, month, day] = date.split("-");
     const [hours, minutes, seconds] = time.split(":");
     const newDate = new Date(year, month - 1, day, hours, minutes, seconds);
     console.log(newDate);
