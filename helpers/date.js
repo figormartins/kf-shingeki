@@ -1,11 +1,18 @@
-//on 2022-09-12 at 23:10:08
-
 const kfAttackTimeToFullDate = (dateTimeAttack) => {
-    dateTimeAttack = dateTimeAttack.replace(new RegExp('on ', 'g'), "");
-    dateTimeAttack = dateTimeAttack.replace(new RegExp('at ', 'g'), "");
-    const [date, time] = dateTimeAttack.split(" ");
-    const [year, month, day] = date.split("-");
-    const [hours, minutes, seconds] = time.split(":");
+    let date, time, year, month, day, hours, minutes, seconds;
+    if (dateTimeAttack.includes("on")) {
+        dateTimeAttack = dateTimeAttack.replace(new RegExp('on ', 'g'), "");
+        dateTimeAttack = dateTimeAttack.replace(new RegExp('at ', 'g'), "");
+        [date, time] = dateTimeAttack.split(" ");
+        [year, month, day] = date.split("-");
+        [hours, minutes, seconds] = time.split(":");
+    }
+    else
+    {
+        [date, time] = dateTimeAttack.split(" ");
+        [day, month, year] = date.split(".");
+        [hours, minutes, seconds] = time.split(":");
+    }
     const newDate = new Date(year, month - 1, day, hours, minutes, seconds);
     return newDate;
 }
