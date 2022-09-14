@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const emailService = require('email-generator');
+const { createUser } = require('./repositories/user');
 require('dotenv').config();
 const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers/date');
 
@@ -32,6 +33,10 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
         await page.click("#content > div > div:nth-child(1) > form > table > tbody > tr:nth-child(7) > td:nth-child(2) > input");
         await page.waitForNavigation();
         console.log("Cadastrou...", email);
+
+        /// Save email on databse
+        await createUser(email);
+        console.log("Saved email on database...");
         
         // Select world
         await page.goto('https://moonid.net/games/knightfight/');
@@ -86,6 +91,7 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
             await page.waitForSelector("#page > div > div:nth-child(4) > div > div > div.kf-bi-thin.padding-md.margin-top-lg.cc.f-os > span > b");
             const valueTime = await page.$eval("#page > div > div:nth-child(4) > div > div > div.kf-bi-thin.padding-md.margin-top-lg.cc.f-os > span > b", el => el.innerHTML);
             timeToAttack = kfAttackTimeToFullDate(valueTime);
+            console.log("Attack time:", valueTime);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -109,5 +115,6 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
         const client = await page.target().createCDPSession();
         await client.send('Network.clearBrowserCookies');
         await client.send('Network.clearBrowserCache');
+        console.log("------------------");
     }
 })();
