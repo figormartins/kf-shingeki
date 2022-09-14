@@ -3,12 +3,10 @@
 const kfAttackTimeToFullDate = (dateTimeAttack) => {
     dateTimeAttack = dateTimeAttack.replace(new RegExp('on ', 'g'), "");
     dateTimeAttack = dateTimeAttack.replace(new RegExp('at ', 'g'), "");
-    console.log(dateTimeAttack);
     const [date, time] = dateTimeAttack.split(" ");
     const [year, month, day] = date.split("-");
     const [hours, minutes, seconds] = time.split(":");
     const newDate = new Date(year, month - 1, day, hours, minutes, seconds);
-    console.log(newDate);
     return newDate;
 }
 
