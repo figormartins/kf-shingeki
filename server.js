@@ -71,7 +71,7 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
 
                 const timeout = Math.abs(timeNow - timeToAttack);
                 console.log("Waiting for:", millisToMinutesAndSeconds(timeout));
-                await new Promise(r => setTimeout(r, timeout));;
+                await new Promise(r => setTimeout(r, timeout));
             }
             
             // Search for user
@@ -115,6 +115,9 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
         const client = await page.target().createCDPSession();
         await client.send('Network.clearBrowserCookies');
         await client.send('Network.clearBrowserCache');
+        const timeout = 55 * 60000;
+        console.log("Waiting for:", millisToMinutesAndSeconds(timeout));
         console.log("------------------");
+        await new Promise(r => setTimeout(r, timeout));
     }
 })();

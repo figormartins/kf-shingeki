@@ -5,7 +5,8 @@
   "author": "Igor",
   "license": "MIT",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "knife": "node ./src/knife.js"
   },
   "dependencies": {
     "@prisma/client": "^4.3.1",
