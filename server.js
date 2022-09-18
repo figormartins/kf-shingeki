@@ -32,7 +32,7 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
         await page.click("#id_terms_accepted");
         await page.click("#content > div > div:nth-child(1) > form > table > tbody > tr:nth-child(7) > td:nth-child(2) > input");
         await page.waitForNavigation();
-        console.log("Cadastrou...", email);
+        console.log("Cadastrou:", email);
 
         /// Save email on databse
         await createUser(email);
@@ -91,7 +91,6 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
             await page.waitForSelector("#page > div > div:nth-child(4) > div > div > div.kf-bi-thin.padding-md.margin-top-lg.cc.f-os > span > b");
             const valueTime = await page.$eval("#page > div > div:nth-child(4) > div > div > div.kf-bi-thin.padding-md.margin-top-lg.cc.f-os > span > b", el => el.innerHTML);
             timeToAttack = kfAttackTimeToFullDate(valueTime);
-            console.log("Attack time:", valueTime);
         } catch (error) {
             console.error("Error:", error.message);
         }
