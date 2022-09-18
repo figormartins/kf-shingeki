@@ -20,6 +20,7 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
     
     while(true) {
         /// Register
+        const error = false;
         await page.goto('https://moonid.net/account/register/knightfight/');
         await page.waitForSelector("#content > div > div:nth-child(1) > form > table > tbody > tr:nth-child(7) > td:nth-child(2) > input");
         const emailGen = emailService.generateEmail();
@@ -91,8 +92,9 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
             await page.waitForSelector("#page > div > div:nth-child(4) > div > div > div.kf-bi-thin.padding-md.margin-top-lg.cc.f-os > span > b");
             const valueTime = await page.$eval("#page > div > div:nth-child(4) > div > div > div.kf-bi-thin.padding-md.margin-top-lg.cc.f-os > span > b", el => el.innerHTML);
             timeToAttack = kfAttackTimeToFullDate(valueTime);
-        } catch (error) {
-            console.error("Error:", error.message);
+        } catch (err) {
+            error = true;
+            console.error("Error:", err.message);
         }
 
         // Remove account
@@ -109,8 +111,8 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
         await client.send('Network.clearBrowserCache');
 
         const timeout = 55 * 60000;
-        console.log("Waiting for:", millisToMinutesAndSeconds(timeout));
+        if (!error) console.log("Waiting for:", millisToMinutesAndSeconds(timeout));
         console.log("------------------");
-        await new Promise(r => setTimeout(r, timeout));
+        if (!error) await new Promise(r => setTimeout(r, timeout));
     }
 })();
