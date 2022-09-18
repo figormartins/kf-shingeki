@@ -93,7 +93,7 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
             timeToAttack = kfAttackTimeToFullDate(valueTime);
             console.log("Attack time:", valueTime);
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Error:", error.message);
         }
 
         // Remove account
@@ -104,17 +104,11 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
         await page.click("#page > form > div > table > tbody > tr:nth-child(48) > td > input[type=image]");
         console.log("Account removed from server...");
 
-        // Logout
-        await page.waitForSelector("#moonid-toolbar-account > a");
-        await page.click("#moonid-toolbar-account > a");
-        await page.waitForSelector("a.more:nth-child(13)");
-        await page.click("a.more:nth-child(13)");
-        console.log("Deslogou...", new Date().toString());
-
         // Clear cache
         const client = await page.target().createCDPSession();
         await client.send('Network.clearBrowserCookies');
         await client.send('Network.clearBrowserCache');
+
         const timeout = 55 * 60000;
         console.log("Waiting for:", millisToMinutesAndSeconds(timeout));
         console.log("------------------");
