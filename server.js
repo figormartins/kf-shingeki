@@ -16,11 +16,12 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
         deviceScaleFactor: 1,
     });
     let timeToAttack;
+    let error;
     console.log("Iniciando...");
     
     while(true) {
         /// Register
-        const error = false;
+        error = false;
         await page.goto('https://moonid.net/account/register/knightfight/');
         await page.waitForSelector("#content > div > div:nth-child(1) > form > table > tbody > tr:nth-child(7) > td:nth-child(2) > input");
         const emailGen = emailService.generateEmail();
