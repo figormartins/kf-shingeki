@@ -21,7 +21,6 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
     
     while(true) {
         /// Register
-        error = false;
         await page.goto('https://moonid.net/account/register/knightfight/');
         await page.waitForSelector("#content > div > div:nth-child(1) > form > table > tbody > tr:nth-child(7) > td:nth-child(2) > input");
         const emailGen = emailService.generateEmail();
@@ -84,17 +83,7 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
             // Attack user
             await page.click("#page > form > div > table:nth-child(6) > tbody > tr:nth-child(8) > td > input[type=image]");
             console.log("Atacou...");
-
-            // Skip button
-            await page.waitForSelector("#button-skip-prem");
-            await page.click("#button-skip-prem");
-            
-            // Get attack time
-            await page.waitForSelector("#page > div > div:nth-child(4) > div > div > div.kf-bi-thin.padding-md.margin-top-lg.cc.f-os > span > b");
-            const valueTime = await page.$eval("#page > div > div:nth-child(4) > div > div > div.kf-bi-thin.padding-md.margin-top-lg.cc.f-os > span > b", el => el.innerHTML);
-            timeToAttack = kfAttackTimeToFullDate(valueTime);
         } catch (err) {
-            error = true;
             console.error("Error:", err.message);
         }
 
@@ -103,7 +92,10 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
         await page.waitForSelector("#page > form > div > table > tbody > tr:nth-child(47) > td > label > div");
         await page.waitForSelector("#page > form > div > table > tbody > tr:nth-child(48) > td > input[type=image]");
         await page.click("#page > form > div > table > tbody > tr:nth-child(47) > td > label > div");
-        await page.click("#page > form > div > table > tbody > tr:nth-child(48) > td > input[type=image]");
+        await Promise.all([
+            page.waitForNavigation(),
+            page.click('#page > form > div > table > tbody > tr:nth-child(48) > td > input[type=image]'),
+        ]);
         console.log("Account removed from server...");
 
         // Clear cache
@@ -111,9 +103,9 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
         await client.send('Network.clearBrowserCookies');
         await client.send('Network.clearBrowserCache');
 
-        const timeout = 55 * 60000;
-        if (!error) console.log("Waiting for:", millisToMinutesAndSeconds(timeout));
+        const timeout = 3585000; //59:45
+        console.log("Waiting for:", millisToMinutesAndSeconds(timeout));
         console.log("------------------");
-        if (!error) await new Promise(r => setTimeout(r, timeout));
+        await new Promise(r => setTimeout(r, timeout));
     }
 })();
