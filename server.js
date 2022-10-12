@@ -83,8 +83,10 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
             // Attack user
             await page.click("#page > form > div > table:nth-child(6) > tbody > tr:nth-child(8) > td > input[type=image]");
             console.log("Atacou...");
+            error = false;
         } catch (err) {
             console.error("Error:", err.message);
+            error = true;
         }
 
         // Remove account
@@ -103,9 +105,9 @@ const { kfAttackTimeToFullDate, millisToMinutesAndSeconds } = require('./helpers
         await client.send('Network.clearBrowserCookies');
         await client.send('Network.clearBrowserCache');
 
-        const timeout = 3585000; //59:45
-        console.log("Waiting for:", millisToMinutesAndSeconds(timeout));
+        const timeout = 3583000; //59:43
+        if (!error) console.log("Waiting for:", millisToMinutesAndSeconds(timeout));
         console.log("------------------");
-        await new Promise(r => setTimeout(r, timeout));
+        if (!error) await new Promise(r => setTimeout(r, timeout));
     }
 })();
